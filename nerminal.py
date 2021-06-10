@@ -1,2 +1,237 @@
 import os
-import sys
+
+
+def cls():
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+
+count = 0
+Text = """
+              ===========================================================================================
+                                                   NL Terminal
+              ===========================================================================================
+              
+              
+[1] Password Generator                             [4] Hi-Fi
+
+[2] Google Drive Download Link Generator                     
+
+[3] Guessing Game                                            
+                                                                                      
+                                                                                      
+                                                   [0] Exit
+
+                           
+"""
+
+
+def password_genrator():
+    from subprocess import call
+    call('color a', shell=True)
+    call('Title Password Generator by Limon®', shell=True)
+    cls()
+    import random
+
+    character = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#%=-"
+    while True:
+        password_length = int(input("Password Length >> "))
+        password_count = int(input("How many password do you want >> "))
+        for num in range(0, password_count):
+            num += 1
+            password = ""
+            for length in range(0, password_length):
+                password_character = random.choice(character)
+                password += password_character
+            print(f"Here is your password no. {num} >> ", password)
+            print()
+        input("Press 'Enter' key to exit the Password Generator...")
+        cls()
+        break
+
+
+def guessing_game():
+    from subprocess import call
+    call('color f0', shell=True)
+    call('Title Guessing Game by Limon®', shell=True)
+    cls()
+    import random
+
+    count_guess = 0
+    print()
+    low = int(input("Enter the low range number --> "))
+    high = int(input("Enter the high range number --> "))
+    cls()
+    if low > high:
+        print("Invalid range! Try again")
+        guessing_game()
+    else:
+        store = random.randrange(low, high)
+        print("""===========Welcome to the Guessing game===========
+
+        * exit = To exit the game
+        * s = To surrender
+        * help = for game rules
+        * If you guess higher than the secret number it will tell you to 'GUESS LOW!'
+        * if you guess lower than the secret number it will tell you to  'GUESS HIGH!'
+        * And you will get 20 attempts to guss the game! So good luck!
+        """)
+        print()
+        print()
+        while True:
+            guess = input("Guess -->").lower()
+            count_guess += 1
+            if str(guess) == 's':
+                print(f"Okay! No problem. The number was {store}")
+                print()
+                input("Press Enter key to exit the game...")
+                break
+            elif str(guess) == 'quite' or guess == 'exit':
+                break
+            elif str(guess) == 'help':
+                print("""===========Welcome to the Guessing game===========
+
+                        * exit = To exit the game
+                        * s = To surrender
+                        * help = for game rules
+                        * If you guess higher than the secret number it will tell you to 'GUESS LOW!'
+                        * if you guess lower than the secret number it will tell you to  'GUESS HIGH!'
+                        * And you will get 20 attempts to guss the game! So good luck!
+                        """)
+                print()
+                print()
+            elif count_guess == 20:
+                print(f"You attempt has expired! So the number was {store}. Good luck for next time!")
+                print()
+                input("Press Enter key to exit the game....")
+                break
+            elif int(guess) > store:
+                print("GUESS LOW!")
+            elif int(guess) < store:
+                print("GUESS HIGH!")
+            elif int(guess) == store:
+                print(f"""Congratulation! You have won the game! It took {count_guess} attempts.""")
+                print()
+                input("Press Enter key to exit the game...")
+                cls()
+                break
+
+
+def google_drive():
+    from subprocess import call
+    call('color a', shell=True)
+    call('Title Google Drive Download Link Generator by Limon®', shell=True)
+    cls()
+    data = input("Enter your google drive link or exit --> ")
+    link = data.find("file/d/")
+    link_2 = data.find("/view?usp=sharing")
+    download = data.find("uc?id=")
+    download_2 = data.find("&export=download")
+    if data == 'exit':
+        pass
+    elif download and download_2 != -1:
+        print("""It's a download link of Google Drive!
+Enjoy! :) """)
+        input("Press Enter key to exit...")
+    elif link and link_2 == -1:
+        print("""Error Link!
+Make sure your link is in this Format:
+>> https://drive.google.com/file/d/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/view?usp=sharing""")
+        input("Press Enter Key to Continue...")
+        google_drive()
+    else:
+        data = data.replace('file/d/', 'uc?id=')
+        data = data.replace('/view?usp=sharing', '&export=download')
+        print()
+        print()
+        print("Here is you download link --> ", data)
+        print()
+        input("Press Enter key to exit...")
+
+
+def hifi():
+    from subprocess import call
+    call('Title Hi-Fi', shell=True)
+    call('color 09', shell=True)
+    messege_menu = """
+                                    ------------------------------------------
+                                             [1] Hide File or Folder
+                                             [2] Show File or Folder
+                                             [0] Exit
+                                    ------------------------------------------
+
+
+    """
+
+    def hidef():
+        from subprocess import call
+        cls()
+        path = input("Drag your file or folder here >>")
+        call(f'Attrib +h +s +r {path}', shell=True)
+        print("Done!")
+        print()
+        call('pause', shell=True)
+        cls()
+        name = input('Enter the Path Text File name >> ')
+        with open(f'{name}.txt', 'w') as text:
+            text.write(f"Path = {path}\n \nCopy the text and fill on the show option to unhide")
+
+    def showf():
+        from subprocess import call
+        cls()
+        path = input("Paste your path here >> ")
+        call(f"Attrib -h -s -r {path}", shell=True)
+        print("Done!")
+        call("pause", shell=True)
+
+    while True:
+        cls()
+        print(messege_menu)
+        menu = input(">>")
+        if int(menu) == 1:
+            hidef()
+        elif int(menu) == 2:
+            showf()
+        elif int(menu) == 0:
+            break
+        elif int(menu) == -1:
+            print("Invalid command!")
+        else:
+            print("Invalid command!")
+
+
+while True:
+    from subprocess import call
+
+    call('color 07', shell=True)
+    call('Title Terminal by Limon®', shell=True)
+    cls()
+    print(Text)
+    command = (input(">>"))
+    if str(command) == 'cls':
+        cls()
+    elif int(command) == 1:
+        password_genrator()
+    elif int(command) == 2:
+        google_drive()
+    elif int(command) == 3:
+        guessing_game()
+    elif int(command) == 4:
+        hifi()
+    elif int(command) == 0:
+        exit()
+    elif command == -1:
+        from subprocess import call
+
+        cls()
+        call("color 4")
+        call('Title Terminal by Limon®', shell=True)
+        print("Invalid!")
+        input("Press Enter key to continue...")
+    else:
+        from subprocess import call
+
+        cls()
+        call("color 4")
+        call('Title Terminal by Limon®', shell=True)
+        print("Invalid!")
+        input("Press Enter key to continue...")
