@@ -1,0 +1,17 @@
+Terminal Feature:
+-------------------------------------------------------------------------------------------
+| Password Generator | Super customizable and strong tool that generates passwords.       |
+-------------------------------------------------------------------------------------------
+| Guessing Game      | If your bored then you can play Guessing Game                      |
+-------------------------------------------------------------------------------------------
+| Google Drive       | It will convert any google drive shareable link to download link.  |
+-------------------------------------------------------------------------------------------
+| Hi-Fi              | It will hide your file or folder                                   |
+-------------------------------------------------------------------------------------------
+This terminal is super user friendly. You can type any portion or shortcut of the name it will execute.
+
+For Example:
+
+if you type "guess" it will execute Guessing Game.
+And if you type shortcut form of Guessing Game like "gg" it will work work as well.
+

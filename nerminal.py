@@ -1,34 +1,21 @@
+# ---------------Module/Package--------------- #
+
 import os
+
+# ---------------- Function ------------------ #
+
+
+def pause():
+    os.system('pause')
 
 
 def cls():
-    os.system('cls' if os.name == 'nt' else 'clear')
-
-
-count = 0
-Text = """
-              ===========================================================================================
-                                                   NL Terminal
-              ===========================================================================================
-              
-              
-[1] Password Generator                             [4] Hi-Fi
-
-[2] Google Drive Download Link Generator                     
-
-[3] Guessing Game                                            
-                                                                                      
-                                                                                      
-                                                   [0] Exit
-
-                           
-"""
+    os.system('cls')
 
 
 def password_genrator():
-    from subprocess import call
-    call('color a', shell=True)
-    call('Title Password Generator by Limon®', shell=True)
+    os.system('color a')
+    os.system('Title Password Generator by Limon®')
     cls()
     import random
 
@@ -50,9 +37,8 @@ def password_genrator():
 
 
 def guessing_game():
-    from subprocess import call
-    call('color f0', shell=True)
-    call('Title Guessing Game by Limon®', shell=True)
+    os.system('color f0')
+    os.system('Title Guessing Game by Limon®')
     cls()
     import random
 
@@ -100,7 +86,8 @@ def guessing_game():
                 print()
                 print()
             elif count_guess == 20:
-                print(f"You attempt has expired! So the number was {store}. Good luck for next time!")
+                print(
+                    f"You attempt has expired! So the number was {store}. Good luck for next time!")
                 print()
                 input("Press Enter key to exit the game....")
                 break
@@ -117,9 +104,8 @@ def guessing_game():
 
 
 def google_drive():
-    from subprocess import call
-    call('color a', shell=True)
-    call('Title Google Drive Download Link Generator by Limon®', shell=True)
+    os.system('color a')
+    os.system('Title Google Drive Download Link Generator by Limon®')
     cls()
     data = input("Enter your google drive link or exit --> ")
     link = data.find("file/d/")
@@ -149,9 +135,8 @@ Make sure your link is in this Format:
 
 
 def hifi():
-    from subprocess import call
-    call('Title Hi-Fi', shell=True)
-    call('color 09', shell=True)
+    os.system('Title Hi-Fi')
+    os.system('color 09')
     messege_menu = """
                                     ------------------------------------------
                                              [1] Hide File or Folder
@@ -163,25 +148,23 @@ def hifi():
     """
 
     def hidef():
-        from subprocess import call
         cls()
         path = input("Drag your file or folder here >>")
-        call(f'Attrib +h +s +r {path}', shell=True)
+        os.system(f'Attrib +h +s +r {path}')
         print("Done!")
         print()
-        call('pause', shell=True)
+        pause()
         cls()
         name = input('Enter the Path Text File name >> ')
         with open(f'{name}.txt', 'w') as text:
             text.write(f"Path = {path}\n \nCopy the text and fill on the show option to unhide")
 
     def showf():
-        from subprocess import call
         cls()
         path = input("Paste your path here >> ")
-        call(f"Attrib -h -s -r {path}", shell=True)
+        os.system(f"Attrib -h -s -r {path}")
         print("Done!")
-        call("pause", shell=True)
+        pause()
 
     while True:
         cls()
@@ -200,38 +183,33 @@ def hifi():
 
 
 while True:
-    from subprocess import call
-
-    call('color 07', shell=True)
-    call('Title Terminal by Limon®', shell=True)
+    os.system('color 07')
+    os.system('Title Terminal by Limon®')
     cls()
-    print(Text)
-    command = (input(">>"))
-    if str(command) == 'cls':
+    command = input(">>").lower()
+    if command == 'cls' or command == 'clear' or command == 'clean':
         cls()
-    elif int(command) == 1:
+    elif command.find('password') != -1 or command.find('generator') != -1 or command == 'pg' or command == 'pwdg' or command == 'pwg':
         password_genrator()
-    elif int(command) == 2:
+    elif command.find('google') != -1 or command.find('drive') != -1 or command == 'gd':
         google_drive()
-    elif int(command) == 3:
+    elif command.find('guessing') != -1 or command.find('guess') != -1 or command == 'game' or command == 'gg':
         guessing_game()
-    elif int(command) == 4:
+    elif command.find('hide') != -1 or command == 'hifi' or command == 'hi-fi' or command == 'hi' or command == 'hf':
         hifi()
-    elif int(command) == 0:
+    elif command == 'help':
+        cls()
+        with open('help.txt', 'r') as file:
+            message = file.read()
+            print(message)
+            print()
+            print()
+            pause()
+    elif command == 'exit' or command == 'close' or command == 'quite' or command == 'leave':
         exit()
-    elif command == -1:
-        from subprocess import call
-
-        cls()
-        call("color 4")
-        call('Title Terminal by Limon®', shell=True)
-        print("Invalid!")
-        input("Press Enter key to continue...")
     else:
-        from subprocess import call
-
         cls()
-        call("color 4")
-        call('Title Terminal by Limon®', shell=True)
-        print("Invalid!")
-        input("Press Enter key to continue...")
+        os.system("color 4")
+        os.system('Title Terminal by Limon®')
+        print("Invalid command!")
+        pause()
