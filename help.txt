@@ -13,5 +13,5 @@ This terminal is super user friendly. You can type any portion or shortcut of th
 For Example:
 
 if you type "guess" it will execute Guessing Game.
-And if you type shortcut form of Guessing Game like "gg" it will work work as well.
+And if you type shortcut form of Guessing Game like "gg" it will work as well.
 
