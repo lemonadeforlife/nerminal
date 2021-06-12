@@ -31,7 +31,7 @@ def password_genrator():
                 password += password_character
             print(f"Here is your password no. {num} >> ", password)
             print()
-        input("Press 'Enter' key to exit the Password Generator...")
+        pause()
         cls()
         break
 
@@ -69,7 +69,7 @@ def guessing_game():
             if str(guess) == 's':
                 print(f"Okay! No problem. The number was {store}")
                 print()
-                input("Press Enter key to exit the game...")
+                pause()
                 break
             elif str(guess) == 'quite' or guess == 'exit':
                 break
@@ -89,7 +89,7 @@ def guessing_game():
                 print(
                     f"You attempt has expired! So the number was {store}. Good luck for next time!")
                 print()
-                input("Press Enter key to exit the game....")
+                pause()
                 break
             elif int(guess) > store:
                 print("GUESS LOW!")
@@ -98,7 +98,7 @@ def guessing_game():
             elif int(guess) == store:
                 print(f"""Congratulation! You have won the game! It took {count_guess} attempts.""")
                 print()
-                input("Press Enter key to exit the game...")
+                pause()
                 cls()
                 break
 
