@@ -1,7 +1,7 @@
 # ---------------Module/Package--------------- #
-
 import os
-
+import pyperclip
+import re
 # ---------------- Function ------------------ #
 
 
@@ -108,30 +108,35 @@ def google_drive():
     os.system('Title Google Drive Download Link Generator by Limon®')
     cls()
     data = input("Enter your google drive link or exit --> ")
-    link = data.find("file/d/")
-    link_2 = data.find("/view?usp=sharing")
-    download = data.find("uc?id=")
-    download_2 = data.find("&export=download")
-    if data == 'exit':
+    if data == 'exit' or data == 'back':
         pass
-    elif download and download_2 != -1:
-        print("""It's a download link of Google Drive!
-Enjoy! :) """)
-        input("Press Enter key to exit...")
-    elif link and link_2 == -1:
-        print("""Error Link!
-Make sure your link is in this Format:
->> https://drive.google.com/file/d/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/view?usp=sharing""")
-        input("Press Enter Key to Continue...")
-        google_drive()
     else:
-        data = data.replace('file/d/', 'uc?id=')
-        data = data.replace('/view?usp=sharing', '&export=download')
-        print()
-        print()
-        print("Here is you download link --> ", data)
-        print()
-        input("Press Enter key to exit...")
+        pattern_google_auth = re.compile(
+            r'(https://)?drive\.google\.com(/file/d/|/uc\?id=).+(/view\?usp=sharing|&export=download|/view).*')
+        matches_auth = pattern_google_auth.match(data)
+        if matches_auth:
+            patter_google_url_download = re.compile(
+                r'(https://)?drive\.google\.com/uc\?id=.+&export=download')
+            matches_download = patter_google_url_download.match(data)
+            if matches_download:
+                print("""It's a download link of Google Drive!
+        Enjoy! :) """)
+                pause()
+            else:
+                data = data.replace('file/d/', 'uc?id=')
+                data = data.replace('/view?usp=sharing', '&export=download')
+                data = data.replace('/view', '&export=download')
+                print()
+                print()
+                pyperclip.copy(data)
+                print("Download link has been copied to your clipboard")
+                pause()
+        else:
+            print("""Error Link!
+    Make sure your link is in this Format:
+ https://drive.google.com/file/d/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/view?usp=sharing""")
+            pause()
+            google_drive()
 
 
 def hifi():
