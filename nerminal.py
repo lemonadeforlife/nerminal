@@ -19,7 +19,8 @@ def password_genrator():
     cls()
     import random
 
-    character = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#%=-"
+    character = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\
+!@#%=-"
     while True:
         password_length = int(input("Password Length >> "))
         password_count = int(input("How many password do you want >> "))
@@ -57,8 +58,10 @@ def guessing_game():
         * exit = To exit the game
         * s = To surrender
         * help = for game rules
-        * If you guess higher than the secret number it will tell you to 'GUESS LOW!'
-        * if you guess lower than the secret number it will tell you to  'GUESS HIGH!'
+        * If you guess higher than the secret number it will tell you to \
+'GUESS LOW!'
+        * if you guess lower than the secret number it will tell you to \
+'GUESS HIGH!'
         * And you will get 20 attempts to guss the game! So good luck!
         """)
         print()
@@ -79,15 +82,19 @@ def guessing_game():
                         * exit = To exit the game
                         * s = To surrender
                         * help = for game rules
-                        * If you guess higher than the secret number it will tell you to 'GUESS LOW!'
-                        * if you guess lower than the secret number it will tell you to  'GUESS HIGH!'
-                        * And you will get 20 attempts to guss the game! So good luck!
+                        * If you guess higher than the secret number it will \
+tell you to 'GUESS LOW!'
+                        * if you guess lower than the secret number it will \
+tell you to  'GUESS HIGH!'
+                        * And you will get 20 attempts to guss the game! So \
+good luck!
                         """)
                 print()
                 print()
             elif count_guess == 20:
                 print(
-                    f"You attempt has expired! So the number was {store}. Good luck for next time!")
+                    f"You attempt has expired! So the number was {store}. Good\
+ luck for next time!")
                 print()
                 pause()
                 break
@@ -96,7 +103,8 @@ def guessing_game():
             elif int(guess) < store:
                 print("GUESS HIGH!")
             elif int(guess) == store:
-                print(f"""Congratulation! You have won the game! It took {count_guess} attempts.""")
+                print(f"""Congratulation! You have won the game! It took \
+{count_guess} attempts.""")
                 print()
                 pause()
                 cls()
@@ -112,7 +120,8 @@ def google_drive():
         pass
     else:
         pattern_google_auth = re.compile(
-            r'(https://)?drive\.google\.com(/file/d/|/uc\?id=).+(/view\?usp=sharing|&export=download|/view).*')
+            r'(https://)?drive\.google\.com(/file/d/|/uc\?id=).+(/view\?usp='
+            r'sharing|&export=download|/view).*')
         matches_auth = pattern_google_auth.match(data)
         if matches_auth:
             patter_google_url_download = re.compile(
@@ -134,7 +143,8 @@ def google_drive():
         else:
             print("""Error Link!
     Make sure your link is in this Format:
- https://drive.google.com/file/d/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/view?usp=sharing""")
+ https://drive.google.com/file/d/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/view? \
+usp=sharing""")
             pause()
             google_drive()
 
@@ -162,7 +172,8 @@ def hifi():
         cls()
         name = input('Enter the Path Text File name >> ')
         with open(f'{name}.txt', 'w') as text:
-            text.write(f"Path = {path}\n \nCopy the text and fill on the show option to unhide")
+            text.write(f"Path = {path}\n \nCopy the text and fill on the show \
+option to unhide")
 
     def showf():
         cls()
@@ -194,13 +205,17 @@ while True:
     command = input(">>").lower()
     if command == 'cls' or command == 'clear' or command == 'clean':
         cls()
-    elif command.find('password') != -1 or command.find('generator') != -1 or command == 'pg' or command == 'pwdg' or command == 'pwg':
+    elif command.find('password') != -1 or command.find('generator') != -1 \
+            or command == 'pg' or command == 'pwdg' or command == 'pwg':
         password_genrator()
-    elif command.find('google') != -1 or command.find('drive') != -1 or command == 'gd':
+    elif command.find('google') != -1 or command.find('drive') != -1 or \
+            command == 'gd':
         google_drive()
-    elif command.find('guessing') != -1 or command.find('guess') != -1 or command == 'game' or command == 'gg':
+    elif command.find('guessing') != -1 or command.find('guess') != -1 or \
+            command == 'game' or command == 'gg':
         guessing_game()
-    elif command.find('hide') != -1 or command == 'hifi' or command == 'hi-fi' or command == 'hi' or command == 'hf':
+    elif command.find('hide') != -1 or command == 'hifi' or command == 'hi-fi'\
+            or command == 'hi' or command == 'hf':
         hifi()
     elif command == 'help':
         cls()
@@ -210,7 +225,8 @@ while True:
             print()
             print()
             pause()
-    elif command == 'exit' or command == 'close' or command == 'quite' or command == 'leave':
+    elif command == 'exit' or command == 'close' or command == 'quite' or \
+            command == 'leave':
         exit()
     else:
         cls()
