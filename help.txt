@@ -8,10 +8,13 @@ Terminal Feature:
 -------------------------------------------------------------------------------------------
 | Hi-Fi              | It will hide your file or folder                                   |
 -------------------------------------------------------------------------------------------
+| Image Converter    | It will convert your any image to jpg/jpeg, png                    |
+-------------------------------------------------------------------------------------------
 This terminal is super user friendly. You can type any portion or shortcut of the name it will execute.
 
 For Example:
 
 if you type "guess" it will execute Guessing Game.
-And if you type shortcut form of Guessing Game like "gg" it will work as well.
-
+Or type "password" it will execute password generator
+And if you type short form of Guessing Game like "gg" it will work as well
+or Passwor Generator "pg" same
