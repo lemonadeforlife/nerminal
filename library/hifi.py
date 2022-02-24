@@ -41,6 +41,7 @@ def hifi():
         pass
     else:
         print("Doesn't support this feature on this OS!")
+        exit()
     messege_menu = """------------------------------------------
             [1] Hide File or Folder
             [0] Exit

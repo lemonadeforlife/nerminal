@@ -15,12 +15,12 @@ def google_drive():
         pass
     else:
         pattern_google_auth = re.compile(
-            r'(https://)?drive\.google\.com(/file/d/|/uc\?id=|/drive/folders).+(/view\?usp='
+            r'(https://|www\.|https://www\.)?drive\.google\.com(/file/d/|/uc\?id=|/drive/folders).+(/view\?usp='
             r'sharing|&export=download|/view)?(.*)?')
         matches_auth = pattern_google_auth.match(data)
         if matches_auth:
             patter_google_url_download = re.compile(
-                r'(https://)?drive\.google\.com/uc\?id=.+&export=download')
+                r'(https://|www\.|https://www\.)?drive\.google\.com/uc\?id=.+&export=download')
             matches_download = patter_google_url_download.match(data)
             if matches_download:
                 print("""It's a download link of Google Drive!

@@ -38,7 +38,7 @@ while loop:
         print(f'Your error was: {e}')
         pause()
 
-img = input('Drag or Enter image path>')
+img = input('Drag or Enter image path>').strip()
 
 img = img.replace("'", '')
 pic = Image.open(img)
