@@ -31,21 +31,22 @@ class PiperTTS:
         """
         if not text:
             return
-
         self.is_speaking = True
+        try:
+            buffer = io.BytesIO()
+            with wave.open(buffer, "wb") as wav_file:
+                wav_file.setnchannels(1)
+                wav_file.setsampwidth(2)
+                wav_file.setframerate(self.sample_rate)
 
-        buffer = io.BytesIO()
-        with wave.open(buffer, "wb") as wav_file:
-            wav_file.setnchannels(1)
-            wav_file.setsampwidth(2)
-            wav_file.setframerate(self.sample_rate)
+                self.voice.synthesize_wav(text, wav_file)
 
-            self.voice.synthesize_wav(text, wav_file)
+            buffer.seek(0)
+            data, fs = sf.read(buffer, dtype="float32")
 
-        buffer.seek(0)
-        data, fs = sf.read(buffer, dtype="float32")
+            sd.play(data, fs)
+            sd.wait()
+            time.sleep(0.4)
 
-        sd.play(data, fs)
-        sd.wait()
-        time.sleep(0.3)
-        self.is_speaking = False
+        finally:
+            self.is_speaking = False
