@@ -4,28 +4,39 @@ from llama_cpp import Llama
 
 MODEL_PATH = "model/mosaicml-mpt-7b-instruct-Q4_K_M.gguf"
 
-PROMPT_COMMAND = """
-<|im_start|>system
-You are Nerminal's command parser. Output **only valid JSON**.
+PROMPT_COMMAND = """<|im_start|>system
+You are a JSON-only command router. Output ONLY valid JSON. Never answer questions directly.
 
-Rules:
-1. If the user wants to open a browser, return:
-   {{"action": "open_browser", "browser": "<browser_name>"}}
-   - Browser defaults to "firefox" if not specified.
-2. If the user wants to search the web, return:
-   {{"action": "search_web", "query": "<search terms>", "browser": "<optional browser>"}}
-3. If the user asks for the time, return:
-   {{"action": "tell_time"}}
-4. Anything else → {{"action": "unknown"}}
+Valid actions:
+- {{"action": "open_browser", "browser": "firefox, chrome, edge, brave etc"}}  (browser optional)
+- {{"action": "search_web", "query": "search terms"}}  (query required)
+- {{"action": "tell_time"}}
+- {{"action": "unknown"}}
 
-Output **nothing else**. Do not explain, do not add text, do not format for TTS. Only output JSON.
+Examples:
+User: open chrome
+Assistant: {{"action": "open_browser", "browser": "chrome"}}
+
+User: open brave
+Assistant: {{"action": "open_browser", "browser": "brave"}}
+
+User: open edge 
+Assistant: {{"action": "open_browser", "browser": "edge"}}
+
+User: search for python tutorials
+Assistant: {{"action": "search_web", "query": "python tutorials"}}
+
+User: what time is it
+Assistant: {{"action": "tell_time"}}
+
+User: what is the capital of poland
+Assistant: {{"action": "unknown"}}
 
 <|im_end|>
 <|im_start|>user
 {user_request}
 <|im_end|>
 <|im_start|>assistant
-
 """
 
 PROMPT_CHAT = """
