@@ -1,25 +1,17 @@
-import sounddevice as sd
-import queue
-import json
 import subprocess
 import shutil
 import time
-from difflib import SequenceMatcher
-from vosk import Model, KaldiRecognizer
+import webbrowser
+from datetime import datetime
+from library.stt import STTEngine, is_wake
+from library.llm import LLMEngine
+from library.tts import PiperTTS
 
-q = queue.Queue()
-
-model = Model("model/vosk-model-en-us-0.42-gigaspeech")
-rec = KaldiRecognizer(model, 16000)
-
-WAKE_PHRASE = "hey nerminal"
 TIMEOUT_SECONDS = 5.0
 STATE_IDLE = "IDLE"
 STATE_LISTENING = "LISTENING"
-current_state = STATE_IDLE
-last_wake_time = 0
 
-browsers = {
+BROWSERS = {
     "firefox": ["firefox"],
     "chrome": ["google-chrome", "chrome", "chrome.exe"],
     "brave": ["brave-browser", "brave", "brave.exe"],
@@ -27,98 +19,120 @@ browsers = {
 }
 
 
-def similar(a, b):
-    return SequenceMatcher(None, a, b).ratio()
+class VoiceAssistant:
+    def __init__(self):
+        self.stt = STTEngine()
+        self.llm = LLMEngine()
+        self.tts = PiperTTS()
+        self.current_state = STATE_IDLE
+        self.last_wake_time = 0
+        self.is_speaking = False
 
+    def find_browser(self, name):
+        for cmd in BROWSERS.get(name, []):
+            if shutil.which(cmd):
+                return cmd
+        return None
 
-def is_wake(text):
-    words = text.split()
-    if len(words) < 1:
-        return False
-    phrase = " ".join(words[:2])
-    return similar(phrase, WAKE_PHRASE) > 0.65
+    def open_browser(self, name):
+        cmd = self.find_browser(name)
+        if cmd:
+            subprocess.Popen([cmd])
+            return True, f"Opening {name}"
+        return False, f"{name} not found"
 
+    def search_web(self, query, browser_name="firefox"):
+        cmd = self.find_browser(browser_name)
+        url = f"https://www.google.com/search?q={query.replace(' ', '+')}"
+        if cmd:
+            subprocess.Popen([cmd, url])
+        else:
+            webbrowser.open(url)
+        return True, f"Searching for: {query}"
 
-def find_browser(name):
-    for cmd in browsers.get(name, []):
-        if shutil.which(cmd):
-            return cmd
-    return None
+    def tell_time(self):
+        now = datetime.now()
+        return True, f"The current time is {now.strftime('%I:%M %p')}"
 
+    def execute_action(self, action_data, user_text):
+        # If action_data is a plain string
+        if isinstance(action_data, str):
+            action_data = {"action": action_data}
 
-def open_browser(name):
-    cmd = find_browser(name)
-    if cmd:
-        subprocess.Popen([cmd])
-        print(f"Opening {name}")
-    else:
-        print(f"{name} not found in PATH")
+        action = action_data.get("action", "unknown")
 
+        if action == "open_browser":
+            browser = action_data.get("browser", user_text.split()[-1].lower())
+            return self.open_browser(browser)
 
-def extract_command(text):
-    """
-    Looks for 'open [browser]' anywhere in the text.
-    Returns the browser name if found, else None.
-    """
-    words = text.split()
-    for i, word in enumerate(words):
-        if word == "open" and i + 1 < len(words):
-            return words[i + 1]
-    return None
+        elif action == "search_web":
+            query = action_data.get("query", user_text)
+            browser = action_data.get("browser", "firefox")
+            return self.search_web(query, browser)
 
+        elif action == "tell_time":
+            return self.tell_time()
 
-def callback(indata, frames, time, status):
-    if status:
-        print(status, flush=True)
-    q.put(bytes(indata))
+        else:
+            # Fallback to chat
+            response = self.llm.chat(user_text)
+            return True, response
 
+    def process_command(self, text):
+        print(f"[CMD] Input: '{text}'")
+        action_data = self.llm.route_command(text)
+        print(f"[CMD] Action: {action_data}")
+        success, response = self.execute_action(action_data, text)
+        return response
 
-print("System Ready. Say 'Hey Nerminal' to start.")
+    def run(self):
+        print("System Ready. Say 'Hey Nerminal' to start.")
+        self.tts.speak("System Ready")
 
-with sd.RawInputStream(
-    samplerate=16000,
-    blocksize=4000,
-    dtype="int16",
-    channels=1,
-    callback=callback,
-):
-    while True:
-        try:
-            data = q.get(timeout=0.1)
-        except queue.Empty:
-            if current_state == STATE_LISTENING:
-                if time.time() - last_wake_time > TIMEOUT_SECONDS:
-                    print("Timeout. Returning to Idle.")
-                    current_state = STATE_IDLE
-            continue
-
-        if rec.AcceptWaveform(data):
-            text = json.loads(rec.Result())["text"]
-
-            if not text:
-                continue
-
-            print("Heard:", text)
-            current_time = time.time()
-            if current_state == STATE_IDLE:
-                if is_wake(text):
-                    current_state = STATE_LISTENING
-                    last_wake_time = current_time
-                    print("Listening...")
-                    browser = extract_command(text)
-                    if browser:
-                        open_browser(browser)
-                        current_state = STATE_IDLE
-                        print("Returning to Idle.")
-
-            elif current_state == STATE_LISTENING:
-                if current_time - last_wake_time > TIMEOUT_SECONDS:
-                    current_state = STATE_IDLE
+        with self.stt.start_stream():
+            while True:
+                if self.tts.is_speaking:
+                    time.sleep(0.05)
                     continue
-                browser = extract_command(text)
-                if browser:
-                    open_browser(browser)
-                else:
-                    print("Command not recognized.")
-                current_state = STATE_IDLE
-                print("Returning to Idle.")
+
+                data = self.stt.get_audio_data(timeout=0.1)
+                if data is None:
+                    if self.current_state == STATE_LISTENING:
+                        if time.time() - self.last_wake_time > TIMEOUT_SECONDS:
+                            print("Timeout. Idle.")
+                            self.current_state = STATE_IDLE
+                            self.llm.clear_history()
+                    continue
+
+                text = self.stt.process_audio(data)
+                if not text:
+                    continue
+
+                print("Heard:", text)
+                current_time = time.time()
+
+                if self.current_state == STATE_IDLE:
+                    if is_wake(text):
+                        print("[WAKE] Detected!")
+                        self.tts.speak("Yes!")
+                        self.current_state = STATE_LISTENING
+                        self.last_wake_time = current_time
+                        print("Listening...")
+
+                elif self.current_state == STATE_LISTENING:
+                    if current_time - self.last_wake_time > TIMEOUT_SECONDS:
+                        print("Timeout. Idle.")
+                        self.current_state = STATE_IDLE
+                        self.llm.clear_history()
+                        continue
+
+                    response = self.process_command(text)
+                    print("Assistant:", response)
+                    self.tts.speak(response)
+                    self.current_state = STATE_IDLE
+                    print("Idle.")
+
+
+if __name__ == "__main__":
+    assistant = VoiceAssistant()
+    assistant.run()
