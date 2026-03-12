@@ -1,7 +1,14 @@
 [project]
 name = "nerminal"
 version = "0.1.0"
-description = "Add your description here"
+description = "A simple lightweight & efficient voice assistant built with Python & Vosk."
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "llama-cpp-python>=0.3.16",
+    "pathvalidate>=3.3.1",
+    "piper-tts>=1.4.1",
+    "sounddevice>=0.5.5",
+    "soundfile>=0.13.1",
+    "vosk>=0.3.45",
+]
