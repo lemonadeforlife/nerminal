@@ -17,7 +17,6 @@ def similar(a, b):
 
 
 def is_wake(text):
-    """Check if text contains wake phrase"""
     words = text.split()
     if len(words) < 1:
         return False
@@ -26,51 +25,70 @@ def is_wake(text):
 
 
 def callback(indata, frames, time, status):
-    """Audio callback - puts data in queue"""
     if status:
         print(status, flush=True)
-    q.put(bytes(indata))
+    try:
+        q.put_nowait(bytes(indata))
+    except queue.Full:
+        pass
+
+
+def getMic():
+    """Return system default input device or first real input mic"""
+    try:
+        default_input = sd.default.device[0]  # input device
+        info = sd.query_devices(default_input)
+        if info["max_input_channels"] > 0:
+            return default_input
+    except Exception:
+        pass
+
+    for i, dev in enumerate(sd.query_devices()):
+        if dev["max_input_channels"] > 0 and not any(
+            x in dev["name"].lower() for x in ["monitor", "default", "pipewire", "jack"]
+        ):
+            return i
+
+    return None
 
 
 class STTEngine:
-    def __init__(self, samplerate=16000, blocksize=4000):
-        """Initialize STT engine"""
-        self.samplerate = samplerate
+    def __init__(self, blocksize=8000):
         self.blocksize = blocksize
+        self.device = getMic()
+        self.samplerate = 16000
+        if self.device is None:
+            raise RuntimeError("No suitable microphone found")
         self.stream = None
+        print(f"Using microphone {self.device} with samplerate {self.samplerate}")
 
     def start_stream(self):
-        """Start audio input stream"""
         self.stream = sd.RawInputStream(
             samplerate=self.samplerate,
             blocksize=self.blocksize,
             dtype="int16",
             channels=1,
+            device=self.device,
             callback=callback,
         )
+        self.stream.start()
         return self.stream
 
     def get_audio_data(self, timeout=0.1):
-        """Get audio data from queue"""
         try:
-            data = q.get(timeout=timeout)
-            return data
+            return q.get(timeout=timeout)
         except queue.Empty:
             return None
 
     def process_audio(self, data):
-        """Process audio data and return transcribed text if complete"""
         if data is None:
             return None
-
         if rec.AcceptWaveform(data):
             result = json.loads(rec.Result())
             return result.get("text", "")
-
         return None
 
     def stop_stream(self):
-        """Stop audio stream"""
         if self.stream:
             self.stream.stop()
             self.stream.close()

@@ -59,7 +59,6 @@ class VoiceAssistant:
         return True, f"The current time is {now.strftime('%I:%M %p')}"
 
     def execute_action(self, action_data, user_text):
-        # If action_data is a plain string
         if isinstance(action_data, str):
             action_data = {"action": action_data}
 
@@ -78,7 +77,6 @@ class VoiceAssistant:
             return self.tell_time()
 
         else:
-            # Fallback to chat
             response = self.llm.chat(user_text)
             return True, response
 
@@ -96,7 +94,7 @@ class VoiceAssistant:
         with self.stt.start_stream():
             while True:
                 if self.tts.is_speaking:
-                    time.sleep(0.02)  # minimal wait
+                    time.sleep(0.02)
                     continue
 
                 data = self.stt.get_audio_data(timeout=0.05)
@@ -124,7 +122,7 @@ class VoiceAssistant:
                         print("Listening...")
 
                 elif self.current_state == STATE_LISTENING:
-                    self.last_wake_time = current_time  # reset timeout on every speech
+                    self.last_wake_time = current_time
                     response = self.process_command(text)
                     print("Assistant:", response)
                     self.tts.speak(response)
