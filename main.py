@@ -1,4 +1,6 @@
 import subprocess
+import sys
+import threading
 import shutil
 import time
 import webbrowser
@@ -6,6 +8,8 @@ from datetime import datetime
 from library.stt import STTEngine, is_wake
 from library.llm import LLMEngine
 from library.tts import PiperTTS
+from PySide6.QtWidgets import QApplication
+from library.gui import NerminalGUI
 
 TIMEOUT_SECONDS = 5.0
 STATE_IDLE = "IDLE"
@@ -92,10 +96,10 @@ class VoiceAssistant:
         with self.stt.start_stream():
             while True:
                 if self.tts.is_speaking:
-                    time.sleep(0.05)
+                    time.sleep(0.02)  # minimal wait
                     continue
 
-                data = self.stt.get_audio_data(timeout=0.1)
+                data = self.stt.get_audio_data(timeout=0.05)
                 if data is None:
                     if self.current_state == STATE_LISTENING:
                         if time.time() - self.last_wake_time > TIMEOUT_SECONDS:
@@ -120,12 +124,7 @@ class VoiceAssistant:
                         print("Listening...")
 
                 elif self.current_state == STATE_LISTENING:
-                    if current_time - self.last_wake_time > TIMEOUT_SECONDS:
-                        print("Timeout. Idle.")
-                        self.current_state = STATE_IDLE
-                        self.llm.clear_history()
-                        continue
-
+                    self.last_wake_time = current_time  # reset timeout on every speech
                     response = self.process_command(text)
                     print("Assistant:", response)
                     self.tts.speak(response)
@@ -134,5 +133,12 @@ class VoiceAssistant:
 
 
 if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    gui = NerminalGUI()
+    gui.show()
+
     assistant = VoiceAssistant()
-    assistant.run()
+    t = threading.Thread(target=assistant.run, daemon=True)
+    t.start()
+
+    sys.exit(app.exec())
