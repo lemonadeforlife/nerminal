@@ -1,4 +1,5 @@
 import subprocess
+import json
 import sys
 import threading
 import shutil
@@ -9,7 +10,7 @@ from library.stt import STTEngine, is_wake
 from library.llm import LLMEngine
 from library.tts import PiperTTS
 from PySide6.QtWidgets import QApplication
-from library.gui import NerminalGUI
+from library.gui import NerminalGUI, ensure_models
 
 TIMEOUT_SECONDS = 5.0
 STATE_IDLE = "IDLE"
@@ -23,11 +24,22 @@ BROWSERS = {
 }
 
 
+def save_models(paths):
+    with open("models.json", "w") as f:
+        json.dump(paths, f, indent=4)
+
+
 class VoiceAssistant:
-    def __init__(self):
-        self.stt = STTEngine()
-        self.llm = LLMEngine()
-        self.tts = PiperTTS()
+    def __init__(
+        self,
+        piper_model,
+        piper_config,
+        vosk_model,
+        llm_model,
+    ):
+        self.stt = STTEngine(vosk_model)
+        self.llm = LLMEngine(llm_model)
+        self.tts = PiperTTS(piper_model, piper_config)
         self.current_state = STATE_IDLE
         self.last_wake_time = 0
         self.is_speaking = False
@@ -132,11 +144,17 @@ class VoiceAssistant:
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+    paths = ensure_models()
+    print("Paths:", paths)
+    save_models(paths)
     gui = NerminalGUI()
     gui.show()
-
-    assistant = VoiceAssistant()
+    assistant = VoiceAssistant(
+        paths["piper_model"],
+        paths["piper_config"],
+        paths["vosk_model"],
+        paths["llm_model"],
+    )
     t = threading.Thread(target=assistant.run, daemon=True)
     t.start()
-
     sys.exit(app.exec())
