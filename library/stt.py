@@ -5,10 +5,6 @@ from difflib import SequenceMatcher
 from vosk import Model, KaldiRecognizer
 
 q = queue.Queue()
-
-model = Model("model/vosk-model-en-us-0.42-gigaspeech")
-rec = KaldiRecognizer(model, 16000)
-
 WAKE_PHRASE = "hey nerminal"
 
 
@@ -53,7 +49,8 @@ def getMic():
 
 
 class STTEngine:
-    def __init__(self, blocksize=8000):
+    def __init__(self, model, blocksize=8000):
+        self.rec = KaldiRecognizer(Model(model), 16000)
         self.blocksize = blocksize
         self.device = getMic()
         self.samplerate = 16000
@@ -83,8 +80,8 @@ class STTEngine:
     def process_audio(self, data):
         if data is None:
             return None
-        if rec.AcceptWaveform(data):
-            result = json.loads(rec.Result())
+        if self.rec.AcceptWaveform(data):
+            result = json.loads(self.rec.Result())
             return result.get("text", "")
         return None
 
