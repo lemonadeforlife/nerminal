@@ -4,33 +4,39 @@ from llama_cpp import Llama
 
 MODEL_PATH = "model/mosaicml-mpt-7b-instruct-Q4_K_M.gguf"
 
-PROMPT_COMMAND = """<|im_start|>system
-You are a JSON-only command router. Output ONLY valid JSON. Never answer questions directly.
+PROMPT_COMMAND = """
+<|im_start|>system
+You are Nerminal's JSON command parser. You MUST output a single valid JSON object **only**. 
+Do NOT write anything else (no explanations, no text, no emojis, no formatting).
 
 Valid actions:
-- {{"action": "open_browser", "browser": "firefox, chrome, edge, brave etc"}}  (browser optional)
-- {{"action": "search_web", "query": "search terms"}}  (query required)
-- {{"action": "tell_time"}}
-- {{"action": "unknown"}}
+- open_browser: open a web browser
+- launch_app: open a system application
+- search_web: search the web
+- tell_time: return the current time
+- unknown: if command cannot be interpreted
 
-Examples:
-User: open chrome
-Assistant: {{"action": "open_browser", "browser": "chrome"}}
+Rules:
+1. For opening a browser:
+   - Include the "browser" field (firefox, chrome, brave, edge).
+   - If the user does not specify, default to "firefox".
+   Example: {{"action": "open_browser", "browser": "firefox"}}
 
-User: open brave
-Assistant: {{"action": "open_browser", "browser": "brave"}}
+2. For launching an app:
+   - Include the "app" field with the exact app name.
+   Example: {{"action": "launch_app", "app": "vlc"}}
 
-User: open edge 
-Assistant: {{"action": "open_browser", "browser": "edge"}}
+3. For searching the web:
+   - Include "query" field with search terms.
+   Example: {{"action": "search_web", "query": "python tutorials"}}
 
-User: search for python tutorials
-Assistant: {{"action": "search_web", "query": "python tutorials"}}
+4. For asking the time:
+   Example: {{"action": "tell_time"}}
 
-User: what time is it
-Assistant: {{"action": "tell_time"}}
+5. If you cannot parse the request:
+   Example: {{"action": "unknown"}}
 
-User: what is the capital of poland
-Assistant: {{"action": "unknown"}}
+Always output **exactly one JSON object**. No extra text.
 
 <|im_end|>
 <|im_start|>user
@@ -60,6 +66,7 @@ Speech formatting rules:
    - "Dr." → "Doctor"
    - "Mr." → "Mister"
    - "St." → "Saint"
+   - "MD." → "Mohammed"
 6. Spell out short numbers where pronounceable ("3" → "three"); leave large numbers as digits.
 7. Use concise sentences (2–4 max unless explanation is required).
 8. Avoid bullet points, lists, or formatting characters.
@@ -70,7 +77,7 @@ Example transformation:
 Bad: "Albert Einstein (1879–1955) was a German-born physicist."
 Good: "Albert Einstein was born in 1879 and died in 1955. He was a German-born physicist known for developing the theory of relativity."
 
-Never output JSON or code. Speak normally.
+Never output JSON or code. Speak normally, as a human would.
 
 <|im_end|>
 <|im_start|>user
@@ -81,9 +88,11 @@ Never output JSON or code. Speak normally.
 
 
 class LLMEngine:
-    def __init__(self, n_ctx=2048, n_threads=4):
+    def __init__(
+        self, model=MODEL_PATH, n_ctx=2048, n_threads=4, n_gpu_layers=40, f16_kv=True
+    ):
         print("Loading LLM model...")
-        self.llm = Llama(model_path=MODEL_PATH, n_ctx=n_ctx, n_threads=n_threads)
+        self.llm = Llama(model, n_ctx=n_ctx, n_threads=n_threads, n_gpu_layers=40)
         print("LLM model loaded successfully!")
 
     def extract_json(self, text):
@@ -102,9 +111,9 @@ class LLMEngine:
         try:
             output = self.llm(
                 prompt,
-                max_tokens=32,
+                max_tokens=64,
                 temperature=0.0,
-                stop=["<|im_end|>", "\n"],
+                stop=["<|im_end|>"],
                 echo=False,
             )
             response_text = output["choices"][0]["text"].strip()
@@ -114,6 +123,7 @@ class LLMEngine:
             result = self.extract_json(response_text)
             if result and result.get("action") in [
                 "open_browser",
+                "launch_app",
                 "search_web",
                 "tell_time",
                 "unknown",
@@ -121,22 +131,26 @@ class LLMEngine:
                 print(f"[LLM ROUTE] Parsed: {result}")
                 return result
 
-            # Plain string fallback
-            for act in ["open_browser", "search_web", "tell_time"]:
-                if act in response_text.lower():
-                    action_data = {"action": act}
-                    # Extract browser for open_browser
-                    if act == "open_browser":
-                        for b in ["firefox", "chrome", "brave", "edge"]:
-                            if b in user_request.lower():
-                                action_data["browser"] = b
-                                break
-                    # search query
-                    if act == "search_web":
-                        action_data["query"] = user_request
-                    return action_data
+            # Robust human-readable fallback
+            lower = user_request.lower()
+            # Browser detection
+            if "browser" in lower:
+                for b in ["firefox", "chrome", "brave", "edge"]:
+                    if b in lower:
+                        return {"action": "open_browser", "browser": b}
+                return {"action": "open_browser", "browser": "firefox"}
+            # App launcher
+            if any(word in lower for word in ["open", "launch", "run"]):
+                return {"action": "launch_app", "app": user_request}
+            # Web search
+            if any(word in lower for word in ["search", "google", "look up"]):
+                return {"action": "search_web", "query": user_request}
+            # Tell time
+            if "time" in lower:
+                return {"action": "tell_time"}
 
             return {"action": "unknown"}
+
         except Exception as e:
             print(f"LLM Route Error: {e}")
             return {"action": "unknown"}
