@@ -10,8 +10,8 @@ from piper import PiperVoice
 class PiperTTS:
     def __init__(
         self,
-        model_path="model/piper/hfc_female/en_US-hfc_female-medium.onnx",
-        config_path=None,
+        model_path,
+        config_path,
     ):
         """
         Load a Piper voice model using the official Python API.
