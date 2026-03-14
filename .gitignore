@@ -44,3 +44,5 @@ test/
 model/
 *.bak
 models.json
+*.dist/
+project_structure.txt
