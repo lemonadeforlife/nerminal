@@ -92,7 +92,9 @@ class LLMEngine:
         self, model=MODEL_PATH, n_ctx=2048, n_threads=4, n_gpu_layers=40, f16_kv=True
     ):
         print("Loading LLM model...")
-        self.llm = Llama(model, n_ctx=n_ctx, n_threads=n_threads, n_gpu_layers=40)
+        self.llm = Llama(
+            model, n_ctx=n_ctx, n_threads=n_threads, n_gpu_layers=40, verbose=False
+        )
         print("LLM model loaded successfully!")
 
     def extract_json(self, text):

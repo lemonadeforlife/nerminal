@@ -2,10 +2,11 @@ import sounddevice as sd
 import queue
 import json
 from difflib import SequenceMatcher
-from vosk import Model, KaldiRecognizer
+from vosk import Model, KaldiRecognizer, SetLogLevel
 
 q = queue.Queue()
 WAKE_PHRASE = "hey nerminal"
+SetLogLevel(-1)  # completely silent
 
 
 def similar(a, b):
@@ -57,7 +58,6 @@ class STTEngine:
         if self.device is None:
             raise RuntimeError("No suitable microphone found")
         self.stream = None
-        print(f"Using microphone {self.device} with samplerate {self.samplerate}")
 
     def start_stream(self):
         self.stream = sd.RawInputStream(

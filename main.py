@@ -149,7 +149,6 @@ class VoiceAssistant:
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     paths = ensure_models()
-    print("Paths:", paths)
     save_models(paths)
     gui = NerminalGUI()
     gui.show()
