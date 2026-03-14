@@ -1,4 +1,7 @@
-<h1 align="center">Nerminal</h1>
+<p align="center">
+  <img src="assets/nerminal_transparent.png" width=50%>
+  <h1 align="center">Nerminal</h1>
+</p>
 Nerminal is a lightweight offline voice assistant written in Python.
 It listens for the wake phrase "hey nerminal", then executes simple system commands like opening a web browser.
 
@@ -54,7 +57,7 @@ Nerminal will respond using the local LLM and speak the answer.
 └── uv.lock
 ```
 
-# Setup & Run Nerminal
+# Build Nerminal
 ## 1. Install uv
 Nerminal uses **uv** to manage the Python environment and dependencies.
 Install it with:
@@ -115,10 +118,10 @@ Once running, say the wake phrase:
 - [x] Application launcher
 - [ ] Plugin system for custom commands
 - [x] Improved wake-word detection
-- [ ] GUI interface
+- [x] GUI interface
 - [x] Implement small scaled qunatized LLM
 - [ ] Better conversation memory
-- [ ] Smarter command routing (LLM + rules)
+- [x] Smarter command routing (LLM + rules)
 - [ ] More system integrations
 - [x] Performance improvements for low-power machines
 
