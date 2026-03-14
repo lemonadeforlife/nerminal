@@ -123,7 +123,6 @@ This will automatically create a virtual environment and install all dependencie
 uv sync
 ```
 
-## 4. Run Nerminal
 Start the assistant with:
 ```bash
 uv run main.py
