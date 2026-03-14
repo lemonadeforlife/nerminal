@@ -1,5 +1,6 @@
 import subprocess
 import json
+import os
 import sys
 import threading
 import shutil
@@ -11,6 +12,9 @@ from library.llm import LLMEngine
 from library.tts import PiperTTS
 from PySide6.QtWidgets import QApplication
 from library.gui import NerminalGUI, ensure_models
+
+if sys.platform.startswith("linux"):
+    os.environ["ESPEAK_DATA_PATH"] = "/usr/share/espeak-ng-data"
 
 TIMEOUT_SECONDS = 5.0
 STATE_IDLE = "IDLE"
