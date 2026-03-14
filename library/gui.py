@@ -12,6 +12,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtGui import QMovie
 from PySide6.QtCore import Qt
+from .utils import get_resource_path
 
 
 MODELS_JSON = "models.json"
@@ -129,7 +130,8 @@ class NerminalGUI(QWidget):
 
         self.bg_label = QLabel(self)
         self.bg_label.setAlignment(Qt.AlignCenter)
-        movie = QMovie("assets/background.gif")
+        bg_path = get_resource_path("assets/background.gif")
+        movie = QMovie(bg_path)
         self.bg_label.setMovie(movie)
         movie.start()
         layout.addWidget(self.bg_label)
