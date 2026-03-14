@@ -57,6 +57,49 @@ Nerminal will respond using the local LLM and speak the answer.
 └── uv.lock
 ```
 
+# Download Required Models
+Nerminal requires three offline models.
+### espeak-ng
+#### Windows 10/11
+for Windows user download latest espeak-ng from [here](https://github.com/espeak-ng/espeak-ng/releases/latest)
+
+#### Linux
+To install precompiled package of eSpeak NG on Linux, use standard package manager of your
+distribution. (Probably is very high, eSpeak NG will be included in package repository).
+
+E.g. for Debian-like distribution (e.g. Ubuntu, Mint, etc.) execute command:
+
+    sudo apt-get install espeak-ng
+
+For RedHat-like distribution (e.g. CentOS, Fedora, etc.) execute command:
+
+    sudo yum install espeak-ng
+    
+For ArchLinux-like distribution (e.g. SteamOS, EndeavourOS, etc.) execute command:
+
+    sudo pacman -S espeak-ng
+
+### Vosk Speech Recognition Model
+Download from [here](https://alphacephei.com/vosk/models) & Extract it into:
+```
+model/vosk-model-en-us-0.42-gigaspeech
+```
+
+### Piper Text-to-Speech Voice
+Download from [rhasspy/piper-voices](https://huggingface.co/rhasspy/piper-voices) huggingface repo
+
+Example voice used in this project:
+```
+model/piper/hfc_female/
+```
+
+### LLM Model
+Download the quantized GGUF model from [maddes8cht/mosaicml-mpt-7b-instruct-gguf](https://huggingface.co/maddes8cht/mosaicml-mpt-7b-instruct-gguf) huggingface repo
+Place it inside:
+```
+model/
+```
+
 # Build Nerminal
 ## 1. Install uv
 Nerminal uses **uv** to manage the Python environment and dependencies.
@@ -80,31 +123,7 @@ This will automatically create a virtual environment and install all dependencie
 uv sync
 ```
 
-## 4. Download Required Models
-Nerminal requires three offline models.
-
-### Vosk Speech Recognition Model
-Download from [here](https://alphacephei.com/vosk/models) & Extract it into:
-```
-model/vosk-model-en-us-0.42-gigaspeech
-```
-
-### Piper Text-to-Speech Voice
-Download from [rhasspy/piper-voices](https://huggingface.co/rhasspy/piper-voices) huggingface repo
-
-Example voice used in this project:
-```
-model/piper/hfc_female/
-```
-
-### LLM Model
-Download the quantized GGUF model from [maddes8cht/mosaicml-mpt-7b-instruct-gguf](https://huggingface.co/maddes8cht/mosaicml-mpt-7b-instruct-gguf) huggingface repo
-Place it inside:
-```
-model/
-```
-
-## 5. Run Nerminal
+## 4. Run Nerminal
 Start the assistant with:
 ```bash
 uv run main.py
