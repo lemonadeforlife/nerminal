@@ -24,10 +24,22 @@ STATE_IDLE = "IDLE"
 STATE_LISTENING = "LISTENING"
 
 BROWSERS = {
-    "firefox": ["firefox"],
-    "chrome": ["google-chrome", "chrome", "chrome.exe"],
-    "brave": ["brave-browser", "brave", "brave.exe"],
-    "edge": ["microsoft-edge", "msedge", "msedge.exe"],
+    "firefox": ["firefox", r"C:\Program Files\Mozilla Firefox\firefox.exe"],
+    "chrome": [
+        "google-chrome",
+        "chrome",
+        r"C:\Program Files\Google\Chrome\Application\chrome.exe",
+    ],
+    "brave": [
+        "brave-browser",
+        "brave",
+        r"C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe",
+    ],
+    "edge": [
+        "microsoft-edge",
+        "msedge",
+        r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
+    ],
 }
 
 
