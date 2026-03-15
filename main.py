@@ -7,6 +7,9 @@ import shutil
 import time
 import webbrowser
 from datetime import datetime
+from library.utils import get_resource_path
+
+from PySide6.QtGui import QIcon
 from library.stt import STTEngine, is_wake
 from library.llm import LLMEngine
 from library.tts import PiperTTS
@@ -150,6 +153,7 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     paths = ensure_models()
     save_models(paths)
+    app.setWindowIcon(QIcon(get_resource_path("assets/nerminal_transparent.png")))
     gui = NerminalGUI()
     gui.show()
     assistant = VoiceAssistant(
