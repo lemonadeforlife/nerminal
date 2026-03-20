@@ -2,10 +2,10 @@
   <img src="assets/nerminal_transparent.png" width=50%>
   <h1 align="center">Nerminal</h1>
 </p>
-Nerminal is a lightweight offline voice assistant written in Python.
-It listens for the wake phrase "hey nerminal", then executes simple system commands like opening a web browser.
-
+<p align="justify">
+Nerminal is a lightweight offline voice assistant written in Python.It listens for the wake phrase <b>"hey nerminal"</b>, then executes simple system commands like opening a web browser.
 The project uses the Vosk speech recognition engine to convert microphone audio into text and trigger commands locally. No internet connection is required.
+</p>
 
 > [!IMPORTANT]
 > ⚠️ Nerminal is currently in early development. Features are experimental and the project is still evolving.
